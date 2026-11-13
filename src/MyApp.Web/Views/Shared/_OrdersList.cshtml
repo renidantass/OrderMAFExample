@@ -1,0 +1,15 @@
+@model IReadOnlyList<MyApp.Application.DTOs.OrderDto>
+
+@foreach (var order in Model)
+{
+    <div class="order-card">
+        <div class="order-top">
+            <span>@order.Id</span>
+            <span class="badge @order.Status">@order.Status</span>
+        </div>
+        <div class="order-meta">
+            <span>Cliente: @order.CustomerName</span>
+            <span>@order.Total.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</span>
+        </div>
+    </div>
+}

@@ -1,0 +1,57 @@
+@model IReadOnlyList<MyApp.Application.DTOs.OrderDto>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgentCleanArchDemo — Generative UI (Razor)</title>
+  <link rel="stylesheet" href="/css/styles.css?v=2" />
+</head>
+<body>
+  <header>
+    <div>
+      <h1>OrderAssistant — Razor + Generative UI</h1>
+      <div class="subtitle">MyApp.Web (Razor) → MyApp.AI (MAF + UI Tools + Ollama) → MyApp.Application → MyApp.Domain</div>
+    </div>
+    <div class="header-actions">
+      <span id="sessionLabel">Sessão: nova</span>
+      <button id="newSessionBtn" class="refresh-btn" type="button">Nova conversa</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="chat-panel">
+      <div class="suggestions">
+        <button class="chip" data-prompt="Quais pedidos existem hoje?">Listar pedidos (tabela)</button>
+        <button class="chip" data-prompt="Quero criar um novo pedido">Criar pedido (formulário)</button>
+        <button class="chip" data-prompt="Mostre os detalhes do pedido ORD-1001">Detalhes ORD-1001 (card)</button>
+        <button class="chip" data-prompt="Tenta cancelar o pedido ORD-1002">Cancelar ORD-1002 (alerta)</button>
+      </div>
+
+      <div id="messages" class="messages">
+        <div class="msg bot">
+          <span class="role">OrderAssistant</span>
+          <div class="msg-text">Olá! Agora toda a interface (página principal, painel de pedidos e blocos de UI) é renderizada com Razor Views.</div>
+        </div>
+      </div>
+
+      <form id="chatForm" class="composer" action="/chat/turn" method="post">
+        <input id="promptInput" type="text" placeholder="Digite sua mensagem para o agente..." autocomplete="off" />
+        <button id="sendBtn" type="submit">Enviar</button>
+      </form>
+    </section>
+
+    <aside class="orders-panel">
+      <div class="orders-header">
+        <h2>Pedidos (Razor Partial)</h2>
+        <button id="refreshOrders" class="refresh-btn" type="button">Atualizar</button>
+      </div>
+      <div id="ordersList" class="orders-list">
+        @await Html.PartialAsync("~/Views/Shared/_OrdersList.cshtml", Model)
+      </div>
+    </aside>
+  </main>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

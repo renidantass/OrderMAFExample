@@ -1,0 +1,15 @@
+@model MyApp.AI.UI.AskChoiceBlock
+
+<div class="ui-card" data-ui-choices>
+    <label>@(Model.Question ?? "Escolha uma opção:")</label>
+    <div class="ui-choices">
+        @foreach (var option in Model.Options)
+        {
+            <button
+                type="button"
+                class="ui-choice-btn"
+                data-chat-action="/chat/turn"
+                data-chat-message="@option">@option</button>
+        }
+    </div>
+</div>

@@ -1,0 +1,14 @@
+@model MyApp.AI.UI.AskInputBlock
+
+<form class="ui-card" action="/chat/turn" method="post" data-chat-form>
+    <label>@(Model.Label ?? Model.FieldName)</label>
+    <div class="ui-input-row">
+        <input
+            name="@Model.FieldName"
+            type="@(Model.InputType ?? "text")"
+            placeholder="@Model.Placeholder"
+            step="@(Model.InputType == "number" ? "any" : null)"
+            required />
+        <button class="ui-btn" type="submit">Enviar</button>
+    </div>
+</form>

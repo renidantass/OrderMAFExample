@@ -1,0 +1,17 @@
+@model MyApp.AI.UI.AlertBlock
+@{
+    var variant = Model.Variant is "success" or "warning" or "error" or "info"
+        ? Model.Variant
+        : "info";
+}
+
+<div class="ui-alert @variant">
+    @if (!string.IsNullOrWhiteSpace(Model.Title))
+    {
+        <div class="ui-alert-title">@Model.Title</div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.Message))
+    {
+        <div class="ui-alert-msg">@Model.Message</div>
+    }
+</div>

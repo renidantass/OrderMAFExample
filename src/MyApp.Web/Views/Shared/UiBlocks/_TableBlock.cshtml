@@ -1,0 +1,29 @@
+@model MyApp.AI.UI.TableBlock
+
+<div class="ui-card">
+    @if (!string.IsNullOrWhiteSpace(Model.Title))
+    {
+        <div class="ui-table-title">@Model.Title</div>
+    }
+    <table class="ui-table">
+        <thead>
+            <tr>
+                @foreach (var col in Model.Columns)
+                {
+                    <th>@col</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in Model.Rows)
+            {
+                <tr>
+                    @foreach (var cell in row)
+                    {
+                        <td>@cell</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

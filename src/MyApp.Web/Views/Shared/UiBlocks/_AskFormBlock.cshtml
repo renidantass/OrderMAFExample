@@ -1,0 +1,23 @@
+@model MyApp.AI.UI.AskFormBlock
+
+<form class="ui-card" action="/chat/turn" method="post" data-chat-form>
+    @if (!string.IsNullOrWhiteSpace(Model.Title))
+    {
+        <div class="ui-table-title">@Model.Title</div>
+    }
+    <div class="ui-form-fields">
+        @foreach (var field in Model.Fields)
+        {
+            <div class="ui-form-field">
+                <label>@(field.Label ?? field.FieldName)</label>
+                <input
+                    name="@field.FieldName"
+                    type="@(field.InputType ?? "text")"
+                    placeholder="@field.Placeholder"
+                    step="@(field.InputType == "number" ? "any" : null)"
+                    required />
+            </div>
+        }
+    </div>
+    <button class="ui-btn" type="submit">@(Model.SubmitLabel ?? "Enviar")</button>
+</form>

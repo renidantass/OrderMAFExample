@@ -1,0 +1,24 @@
+@model MyApp.Web.Models.BotMessageVm
+
+<div class="msg bot" data-session-id="@Model.SessionId">
+    <span class="role">OrderAssistant</span>
+    @if (!string.IsNullOrWhiteSpace(Model.Reply))
+    {
+        <div class="msg-text">@Model.Reply.Trim()</div>
+    }
+    @if (Model.Blocks.Count > 0)
+    {
+        <div class="ui-blocks">
+            @foreach (var block in Model.Blocks)
+            {
+                @await Html.PartialAsync(block.ViewName, block.Model)
+            }
+        </div>
+    }
+    @if (Model.UpdatedOrders is not null)
+    {
+        <template data-orders-oob>
+            @await Html.PartialAsync("~/Views/Shared/_OrdersList.cshtml", Model.UpdatedOrders)
+        </template>
+    }
+</div>

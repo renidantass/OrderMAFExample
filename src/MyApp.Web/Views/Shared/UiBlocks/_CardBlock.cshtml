@@ -1,0 +1,20 @@
+@model MyApp.AI.UI.CardBlock
+
+<div class="ui-card">
+    <div class="ui-detail-header">
+        <span>@(Model.Title ?? "Detalhes")</span>
+        @if (!string.IsNullOrWhiteSpace(Model.Badge))
+        {
+            <span class="badge @Model.Badge">@Model.Badge</span>
+        }
+    </div>
+    <div class="ui-detail-grid">
+        @foreach (var field in Model.Fields)
+        {
+            <div class="ui-detail-item">
+                <span>@field.Label</span>
+                <strong>@field.Value</strong>
+            </div>
+        }
+    </div>
+</div>
