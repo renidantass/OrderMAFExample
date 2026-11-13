@@ -1,8 +1,8 @@
 using System.Collections.Concurrent;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using MyApp.AI.Contracts;
 using MyApp.AI.Tools;
-using MyApp.AI.UI;
 
 namespace MyApp.AI.Agents;
 
@@ -14,8 +14,8 @@ public interface IOrderAssistant
 public sealed class OrderAssistantAgent(
     IChatClient chatClient,
     OrderTools orderTools,
-    UiTools uiTools,
-    UiBlockCollector uiCollector) : IOrderAssistant
+    InteractionTools interactionTools,
+    ResponseBlockCollector blockCollector) : IOrderAssistant
 {
     private static readonly ConcurrentDictionary<string, AgentSession> Sessions = new();
 
@@ -40,7 +40,7 @@ public sealed class OrderAssistantAgent(
             ? Guid.NewGuid().ToString("N")[..12]
             : sessionId;
 
-        AITool[] allTools = [.. orderTools.AsAITools(), .. uiTools.AsAITools()];
+        AITool[] allTools = [.. orderTools.AsAITools(), .. interactionTools.AsAITools()];
 
         AIAgent agent = chatClient.AsAIAgent(new ChatClientAgentOptions
         {
@@ -65,7 +65,7 @@ public sealed class OrderAssistantAgent(
         return new AgentTurnResult(
             activeSessionId,
             replyText,
-            uiCollector.Blocks.ToList(),
-            uiCollector.OrdersMutated);
+            blockCollector.Blocks.ToList(),
+            blockCollector.OrdersMutated);
     }
 }

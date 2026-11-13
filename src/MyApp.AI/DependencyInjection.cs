@@ -2,8 +2,8 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyApp.AI.Agents;
+using MyApp.AI.Contracts;
 using MyApp.AI.Tools;
-using MyApp.AI.UI;
 using OllamaSharp;
 
 namespace MyApp.AI;
@@ -16,9 +16,9 @@ public static class DependencyInjection
         var model = configuration["AI:Ollama:Model"] ?? "qwen3:8b";
 
         services.AddSingleton<IChatClient>(_ => new OllamaApiClient(new Uri(endpoint), model));
-        services.AddScoped<UiBlockCollector>();
+        services.AddScoped<ResponseBlockCollector>();
         services.AddScoped<OrderTools>();
-        services.AddScoped<UiTools>();
+        services.AddScoped<InteractionTools>();
         services.AddScoped<IOrderAssistant, OrderAssistantAgent>();
 
         return services;

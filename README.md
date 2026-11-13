@@ -8,15 +8,15 @@ Projeto de referência em **.NET 10** demonstrando como integrar o **Microsoft A
 MyApp.Domain          Regras e entidades puras (sem dependências)
 MyApp.Application     ──► MyApp.Domain (casos de uso, DTOs e contratos)
 MyApp.Infrastructure  ──► MyApp.Application (repositório em memória)
-MyApp.AI              ──► MyApp.Application (MAF, OllamaSharp, tools e UiBlocks)
+MyApp.AI              ──► MyApp.Application (MAF, OllamaSharp, tools e Contracts)
 MyApp.Web             ──► Application, Infrastructure, AI (Razor, controllers e API)
 ```
 
 Principais decisões do desenho:
 
 - **Isolamento da IA:** `MyApp.AI` não referencia `MyApp.Infrastructure` nem conhece HTML/Razor. As *tools* em `OrderTools` apenas delegam para `IOrderService` na `Application`.
-- **Generative UI tipada:** `OrderTools` e `UiTools` registram blocos tipados (`TableBlock`, `CardBlock`, `AlertBlock`, `AskFormBlock`, `AskInputBlock`, `AskChoiceBlock`) em `UiBlockCollector` (escopo por requisição).
-- **Renderização em Razor Partial Views:** `HomeController` (`POST /chat/turn`) mapeia cada `UiBlock` via *pattern matching* em `UiBlockMapper` para sua Partial View em `Views/Shared/UiBlocks/` e devolve `_BotMessage.cshtml` pronto em uma única resposta.
+- **Generative UI tipada:** `OrderTools` e `InteractionTools` registram blocos tipados (`TableBlock`, `CardBlock`, `AlertBlock`, `AskFormBlock`, `AskInputBlock`, `AskChoiceBlock`) em `ResponseBlockCollector` (escopo por requisição).
+- **Renderização em Razor Partial Views:** `HomeController` (`POST /chat/turn`) mapeia cada `ResponseBlock` via *pattern matching* em `UiBlockMapper` para sua Partial View em `Views/Shared/UiBlocks/` e devolve `_BotMessage.cshtml` pronto em uma única resposta.
 - **Atualização seletiva da barra lateral (`OrdersMutated`):** apenas *tools* de escrita (`CreateOrderAsync`, `CancelOrderAsync`) marcam `OrdersMutated = true`. Quando isso ocorre, a mesma resposta de `/chat/turn` inclui `<template data-orders-oob>` com `_OrdersList.cshtml` atualizado, evitando requisições extras.
 
 ## Pré-requisitos

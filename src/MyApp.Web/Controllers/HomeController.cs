@@ -29,7 +29,7 @@ public sealed class HomeController(IOrderService orderService, IOrderAssistant a
 
         var result = await assistant.AskAsync(request.Message, request.SessionId, ct);
 
-        var hasVisualBlock = result.Blocks.Any(b => b is MyApp.AI.UI.TableBlock or MyApp.AI.UI.CardBlock or MyApp.AI.UI.AlertBlock);
+        var hasVisualBlock = result.Blocks.Any(b => b is MyApp.AI.Contracts.TableBlock or MyApp.AI.Contracts.CardBlock or MyApp.AI.Contracts.AlertBlock);
         var reply = hasVisualBlock ? StripMarkdownTablesAndLists(result.Reply) : result.Reply;
 
         var updatedOrders = result.OrdersMutated

@@ -1,13 +1,13 @@
 using System.ComponentModel;
 using Microsoft.Extensions.AI;
-using MyApp.AI.UI;
+using MyApp.AI.Contracts;
 
 namespace MyApp.AI.Tools;
 
 /// <summary>
-/// Generic UI tools allowing any agent to request structured inputs, choices or visual elements.
+/// Generic interaction tools allowing any agent to request structured inputs, choices or visual elements.
 /// </summary>
-public sealed class UiTools(UiBlockCollector collector)
+public sealed class InteractionTools(ResponseBlockCollector collector)
 {
     public IReadOnlyList<AITool> AsAITools() =>
     [

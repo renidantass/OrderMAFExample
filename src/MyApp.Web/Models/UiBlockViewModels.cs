@@ -1,12 +1,12 @@
 using System.Text.Json;
-using MyApp.AI.UI;
+using MyApp.AI.Contracts;
 using MyApp.Application.DTOs;
 
 namespace MyApp.Web.Models;
 
 public sealed record UiBlockRequest(string Type, JsonElement Payload);
 
-public sealed record RenderedBlockVm(string ViewName, UiBlock Model);
+public sealed record RenderedBlockVm(string ViewName, ResponseBlock Model);
 
 public sealed record BotMessageVm(
     string SessionId,
@@ -19,7 +19,7 @@ public static class UiBlockMapper
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     // Direct pattern matching without JSON serialization round-trip.
-    public static RenderedBlockVm Map(UiBlock block) => block switch
+    public static RenderedBlockVm Map(ResponseBlock block) => block switch
     {
         AskInputBlock => new("~/Views/Shared/UiBlocks/_AskInputBlock.cshtml", block),
         AskFormBlock => new("~/Views/Shared/UiBlocks/_AskFormBlock.cshtml", block),
@@ -41,7 +41,7 @@ public static class UiBlockMapper
         _ => throw new InvalidOperationException($"Unknown block type '{type}'.")
     };
 
-    private static T Deserialize<T>(JsonElement payload) where T : UiBlock =>
+    private static T Deserialize<T>(JsonElement payload) where T : ResponseBlock =>
         payload.Deserialize<T>(JsonOptions)
         ?? throw new InvalidOperationException($"Invalid payload for {typeof(T).Name}.");
 }

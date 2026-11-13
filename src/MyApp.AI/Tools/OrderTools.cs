@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Text.Json;
 using Microsoft.Extensions.AI;
-using MyApp.AI.UI;
+using MyApp.AI.Contracts;
 using MyApp.Application.DTOs;
 using MyApp.Application.Services;
 
@@ -10,9 +10,9 @@ namespace MyApp.AI.Tools;
 
 /// <summary>
 /// Thin adapter exposing Application use cases as MAF tools.
-/// Automatically queues strongly-typed UiBlocks deterministically.
+/// Automatically queues strongly-typed ResponseBlocks deterministically.
 /// </summary>
-public sealed class OrderTools(IOrderService orderService, UiBlockCollector uiCollector)
+public sealed class OrderTools(IOrderService orderService, ResponseBlockCollector blockCollector)
 {
     private static readonly CultureInfo PtBr = CultureInfo.GetCultureInfo("pt-BR");
 
@@ -40,7 +40,7 @@ public sealed class OrderTools(IOrderService orderService, UiBlockCollector uiCo
             ])
             .ToList();
 
-        uiCollector.Add(new TableBlock(
+        blockCollector.Add(new TableBlock(
             Title: $"Pedidos ({orders.Count})",
             Columns: ["Código", "Cliente", "Total", "Status", "Criado em"],
             Rows: rows));
@@ -57,7 +57,7 @@ public sealed class OrderTools(IOrderService orderService, UiBlockCollector uiCo
         var order = await orderService.GetByIdAsync(orderId, cancellationToken);
         if (order is null)
         {
-            uiCollector.Add(new AlertBlock(
+            blockCollector.Add(new AlertBlock(
                 Variant: "warning",
                 Title: "Pedido não encontrado",
                 Message: $"Não existe nenhum pedido com o código '{orderId}'."));
@@ -89,7 +89,7 @@ public sealed class OrderTools(IOrderService orderService, UiBlockCollector uiCo
 
         if (missingFields.Count > 0)
         {
-            uiCollector.Add(new AskFormBlock("Novo Pedido", "Criar pedido", missingFields));
+            blockCollector.Add(new AskFormBlock("Novo Pedido", "Criar pedido", missingFields));
             return "OK: form queued on UI for missing fields. Reply with one short plain sentence telling the user to fill in the form.";
         }
 
@@ -97,7 +97,7 @@ public sealed class OrderTools(IOrderService orderService, UiBlockCollector uiCo
             new CreateOrderRequest(customerName!, total!.Value),
             cancellationToken);
 
-        uiCollector.MarkOrdersMutated();
+        blockCollector.MarkOrdersMutated();
         QueueOrderCard($"Pedido criado: {created.Id}", created);
         return $"OK: order {created.Id} created and visual card rendered on UI. Reply in one short plain sentence without markdown.";
     }
@@ -109,27 +109,27 @@ public sealed class OrderTools(IOrderService orderService, UiBlockCollector uiCo
     {
         if (string.IsNullOrWhiteSpace(orderId))
         {
-            uiCollector.Add(new AskInputBlock("orderId", "Código do pedido para cancelar", "text", "Ex: ORD-1003"));
+            blockCollector.Add(new AskInputBlock("orderId", "Código do pedido para cancelar", "text", "Ex: ORD-1003"));
             return "OK: input 'orderId' queued on UI. Reply concisely asking the user to enter the order code.";
         }
 
         try
         {
             var cancelled = await orderService.CancelAsync(orderId, cancellationToken);
-            uiCollector.MarkOrdersMutated();
+            blockCollector.MarkOrdersMutated();
             QueueOrderCard($"Pedido cancelado: {cancelled.Id}", cancelled);
             return $"OK: order {cancelled.Id} cancelled and visual card rendered on UI. Reply in one short plain sentence without markdown.";
         }
         catch (Exception ex) when (ex is KeyNotFoundException or InvalidOperationException)
         {
-            uiCollector.Add(new AlertBlock("error", $"Não foi possível cancelar {orderId}", ex.Message));
+            blockCollector.Add(new AlertBlock("error", $"Não foi possível cancelar {orderId}", ex.Message));
             return $"OK: error alert rendered on UI explaining why '{orderId}' could not be cancelled ({ex.Message}). Reply in one short plain sentence.";
         }
     }
 
     private void QueueOrderCard(string title, OrderDto order)
     {
-        uiCollector.Add(new CardBlock(
+        blockCollector.Add(new CardBlock(
             Title: title,
             Badge: order.Status,
             Fields:
