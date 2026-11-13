@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyApp.AI.Agents;
 using MyApp.AI.Contracts;
+using MyApp.AI.Guardrails;
 using MyApp.AI.Tools;
 using OllamaSharp;
 
@@ -16,6 +17,9 @@ public static class DependencyInjection
         var model = configuration["AI:Ollama:Model"] ?? "qwen3:8b";
 
         services.AddSingleton<IChatClient>(_ => new OllamaApiClient(new Uri(endpoint), model));
+        services.AddSingleton(_ => GuardrailOptions.FromConfiguration(configuration));
+        services.AddSingleton<IPromptGuard, DefaultPromptGuard>();
+
         services.AddScoped<ResponseBlockCollector>();
         services.AddScoped<OrderTools>();
         services.AddScoped<InteractionTools>();
